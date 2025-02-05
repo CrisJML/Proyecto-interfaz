@@ -1,5 +1,39 @@
 import pandas as pd
 import streamlit as st
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+def escoger_ejercicios(df):
+    return df['Ejercicio'].unique()
+
+
+
+
+
+def plot_ejercicios(df, ejercicios):
+
+    plt.figure(figsize=(10, 6))
+    
+    for ejercicio in ejercicios:
+        df_ejercicio = df[df['Ejercicio'] == ejercicio]
+        plt.plot(df_ejercicio['Fecha'], df_ejercicio['Repeticiones'], label=ejercicio, marker='o')
+    
+    plt.xlabel('Fecha')
+    plt.ylabel('Repeticiones')
+    plt.title('Repeticiones por Ejercicio a lo largo del tiempo')
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    
+    return plt
+
+
+
+
+
+
 
 def cargar_datos(ruta_archivo):
     """
@@ -65,8 +99,4 @@ def eliminar_ultimo_registro(df):
 def mostrar_tabla(df):
     st.dataframe(df,use_container_width=True)
 
-def obtener_tipos_ejercicio(df):
-    """
-    Extrae los tipos de ejercicio únicos de la columna 'ejercicio'.
-    """
-    return df['Ejercicio'].unique()
+

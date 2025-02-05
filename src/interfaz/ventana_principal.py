@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
-from logica.funciones import agregar_registro, guardar_csv, cargar_datos, eliminar_ultimo_registro, mostrar_tabla
+from logica.funciones import agregar_registro, guardar_csv, cargar_datos, eliminar_ultimo_registro, mostrar_tabla, plot_ejercicios
 
 
 def mostrar_ventana_principal():
@@ -18,8 +18,13 @@ def mostrar_ventana_principal():
     if "mostrar_actualizar" not in st.session_state:
         st.session_state.mostrar_actualizar = False
 
+    if "mostrar_grafica" not in st.session_state:
+        st.session_state.mostrar_grafica = False
+    
+
     if "df" not in st.session_state:  # Asegurarse de que df esté en el estado de sesión
-        st.session_state.df = pd.DataFrame()  # Inicializar un DataFrame vacío por si no hay datos    
+        st.session_state.df = pd.DataFrame()  # Inicializar un DataFrame vacío por si no hay datos  
+
 
 
 
@@ -42,6 +47,7 @@ def mostrar_ventana_principal():
             
     if archivo is not None and flag:  
         st.session_state.df = cargar_datos(archivo)
+        st.session_state.df['Fecha'] = pd.to_datetime(st.session_state.df['Fecha'])
         st.write("Carga exitosa")
     else:   
         st.write("Suba su archivo...")
@@ -55,7 +61,34 @@ def mostrar_ventana_principal():
 
 
     if st.button("Observar gráfica", use_container_width=True):
-            st.write("Has clickeado en 'Observar gráfica'")  # Mensaje de prueba        
+            st.session_state.mostrar_grafica = not st.session_state.mostrar_grafica
+
+    if st.session_state.mostrar_grafica:
+         #Seleccionar grupo muscular
+        grupos_musculares = st.session_state.df['Grupo muscular'].unique()
+        grupo_seleccionado = st.selectbox('Selecciona un grupo muscular', grupos_musculares)
+
+        # Filtrar ejercicios por grupo muscular seleccionado
+        ejercicios_grupo = st.session_state.df[st.session_state.df['Grupo muscular'] == grupo_seleccionado]['Ejercicio'].unique()
+        
+        # Seleccionar ejercicios específicos
+        ejercicios_seleccionados = st.multiselect(
+            'Selecciona los ejercicios a graficar', 
+            ejercicios_grupo, 
+            default=ejercicios_grupo
+        )
+
+        # Filtrar el DataFrame según los ejercicios seleccionados
+        df_filtrado = st.session_state.df[
+            (st.session_state.df['Ejercicio'].isin(ejercicios_seleccionados)) &
+            (st.session_state.df['Grupo muscular'] == grupo_seleccionado)
+        ]
+
+        # Mostrar el gráfico si se seleccionaron ejercicios
+        if ejercicios_seleccionados:
+            st.pyplot(plot_ejercicios(df_filtrado, ejercicios_seleccionados))
+        else:
+            st.write("Por favor, selecciona al menos un ejercicio.")       
 
 
 
