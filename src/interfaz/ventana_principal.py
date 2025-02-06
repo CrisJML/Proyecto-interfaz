@@ -177,7 +177,13 @@ def mostrar_ventana_principal():
 
     if st.button("Salir", use_container_width=True):
             st.write("Ahora puedes cerrar la ventana")
-            os._exit(0)  # Detener la ejecución de Streamlit
+    
+            # Ejecutar código JS para cerrar la pestaña
+            st.markdown("""
+                <script>
+                window.close();
+                </script>
+            """, unsafe_allow_html=True)
 
 
 
