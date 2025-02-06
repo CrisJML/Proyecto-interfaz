@@ -49,10 +49,13 @@ def mostrar_ventana_principal():
         st.session_state.file_uploaded = False
 
     if archivo:
-        confirm_upload = st.checkbox("Si ya cargó su archivo, marque esta casilla")
-        if not confirm_upload:
-            if st.button("Carga tu archivo", use_container_width=True):
-                flag = True
+        confirm_upload = st.checkbox("Marque la casilla para cargar su archivo")
+        if confirm_upload:
+            flag = True
+        
+        
+        
+        
         
     
     if archivo is not None and flag:  
@@ -172,20 +175,6 @@ def mostrar_ventana_principal():
                             mime="text/csv"
                         )   
                 os.remove(ruta)
-
-
-
-    if st.button("Salir", use_container_width=True):
-            st.write("Ahora puedes cerrar la ventana")
-    
-            # Ejecutar código JS para cerrar la pestaña
-            st.markdown("""
-                <script>
-                window.close();
-                </script>
-            """, unsafe_allow_html=True)
-
-
 
 
 
