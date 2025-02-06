@@ -1,35 +1,36 @@
 import pandas as pd
 import streamlit as st
 import seaborn as sns
-import matplotlib.pyplot as plt
-
+import plotly.express as px
 
 def escoger_ejercicios(df):
     return df['Ejercicio'].unique()
 
 
 
-
-
-def plot_ejercicios(df, ejercicios):
-
-    plt.figure(figsize=(10, 6))
+def plot_ejercicios(df, ejercicios, metrica):
+    # Filtrar los ejercicios seleccionados
+    df_filtrado = df[df['Ejercicio'].isin(ejercicios)]
     
-    for ejercicio in ejercicios:
-        df_ejercicio = df[df['Ejercicio'] == ejercicio]
-        plt.plot(df_ejercicio['Fecha'], df_ejercicio['Repeticiones'], label=ejercicio, marker='o')
+    # Crear el gráfico interactivo
+    fig = px.line(df_filtrado, 
+                  x='Fecha', 
+                  y=metrica,  # Variable dinámica en el eje y
+                  color='Ejercicio', 
+                  markers=True,  
+                  title=f'{metrica} por Ejercicio a lo largo del tiempo')
     
-    plt.xlabel('Fecha')
-    plt.ylabel('Repeticiones')
-    plt.title('Repeticiones por Ejercicio a lo largo del tiempo')
-    plt.legend()
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    
-    return plt
+    # Personalizar la apariencia
+    fig.update_layout(
+        xaxis_title='Fecha',
+        yaxis_title=metrica,  # Etiqueta dinámica en el eje y
+        xaxis=dict(showgrid=True, tickangle=45),
+        yaxis=dict(showgrid=True),
+        template="plotly_white",
+        legend_title="Ejercicios"
+    )
 
-
+    return fig
 
 
 
@@ -64,13 +65,32 @@ def guardar_csv(df, ruta="archivo actualizado.csv"):
 
 
 
-def agregar_registro(df):
+"""def agregar_registro(df):
     if not df.empty:
         # Obtener la última fila
         ultima_fila = df.iloc[-1:]
         # Concatenar la última fila con el DataFrame
         df = pd.concat([df, ultima_fila], ignore_index=True)
-    return df
+    return df"""
+
+
+# Obtener valores únicos de Grupo Muscular y Ejercicios
+def obtener_opciones(df, columna):
+    return df[columna].unique().tolist() if not df.empty else []
+
+# Función para agregar un nuevo registro
+def agregar_registro(df, grupo, ejercicio, series, repeticiones, carga, fecha):
+    nuevo_registro = pd.DataFrame([{
+        "Grupo muscular": grupo,
+        "Ejercicio": ejercicio,
+        "Series": int(series),
+        "Repeticiones": int(repeticiones),
+        "Carga [Kg]": float(carga),
+        "Fecha": pd.to_datetime(fecha)
+    }])
+    return pd.concat([df, nuevo_registro], ignore_index=True)
+
+
 
 
 
@@ -97,6 +117,7 @@ def eliminar_ultimo_registro(df):
 
        
 def mostrar_tabla(df):
+    
     st.dataframe(df,use_container_width=True)
 
 
