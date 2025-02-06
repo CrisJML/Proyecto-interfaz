@@ -112,50 +112,11 @@ def mostrar_ventana_principal():
 
         # Mostrar el gráfico si se seleccionaron ejercicios
         if ejercicios_seleccionados:
-            st.plotly_chart(plot_ejercicios(df_filtrado, ejercicios_seleccionados, metrica_seleccionada))```python
-# Agrega la ruta de src/ al PATH de Python
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Configurar la página para usar todo el espacio de esta
-st.set_page_config(page_title="FitPlan Analysis", layout="wide", initial_sidebar_state="expanded")
-
-# Título de la página
-st.markdown("<h1 style='text-align: center; font-size: 50px;'>FitPlan Analysis</h1>", unsafe_allow_html=True)
-
-# Cargar el archivo
-st.markdown("<h1 style='text-align: center; font-size: 30px;'>Sube tu registro de entrenamientos aquí:</h1>", unsafe_allow_html=True)
-archivo = st.file_uploader("Carga tu archivo", type=["csv"], key="file_uploader", label_visibility="collapsed")
-
-# ... (rest of the code remains the same)
-
-# Mostrar botones adicionales si se activó "Actualizar archivo"
-if st.session_state.mostrar_actualizar:
-    col_small1, col_small2, col_small3  = st.columns([0.2, 0.6, 0.2])  # Columnas más pequeñas
-    with col_small2:
-        # ... (rest of the code remains the same)
-
-        # Inputs para Series, Repeticiones, Carga y Fecha
-        with st.form("agregar_registro"):
-            grupo_muscular = st.selectbox("Seleccione el grupo muscular:", obtener_opciones(st.session_state.df, "Grupo muscular"))
-            ejercicio = st.selectbox("Seleccione el ejercicio:", obtener_opciones(st.session_state.df, "Ejercicio"))
-            series = st.number_input("Series", min_value=1, max_value=10, step=1)
-            repeticiones = st.number_input("Repeticiones", min_value=1, max_value=50, step=1)
-            carga = st.number_input("Carga [Kg]", min_value=0.0, step=0.5)
-            fecha = st.date_input("Fecha")
-            submitted = st.form_submit_button("Agregar")
-            if submitted:
-                if grupo_muscular and ejercicio:
-                    st.session_state.df = agregar_registro(st.session_state.df, grupo_muscular, ejercicio, series, repeticiones, carga, fecha)
-                    st.success("Registro agregado con éxito")
-                    mostrar_tabla(st.session_state.df)
-                else:
-                    st.error("Debe seleccionar un grupo muscular y un ejercicio")
-```
-        else:
-            st.write("Por favor, selecciona al menos un ejercicio.")       
+            st.plotly_chart(plot_ejercicios(df_filtrado, ejercicios_seleccionados, metrica_seleccionada))
+            
 
 
-
+    
     if st.button("Actualizar archivo", use_container_width=True):
         if st.session_state.df .empty:
             st.write("Cargue primero su archivo...")
